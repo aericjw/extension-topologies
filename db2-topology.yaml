@@ -1,0 +1,408 @@
+topology:
+  types:
+  - enabled: true
+    name: sql:db2_host
+    displayName: DB2 Host
+    rules:
+    - idPattern: db2_host_{device.address}
+      instanceNamePattern: DB2 {device.address}
+      iconPattern: host
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - pattern: '{device.address}'
+        key: dt.ip_addresses
+        displayName: IP Address
+      - pattern: '{device.name}'
+        key: Hostname
+      - pattern: '{os_full_version}'
+        key: OSFullVersion
+        displayName: OS Full Version
+      requiredDimensions:
+      - key: os_full_version
+    - idPattern: db2_host_{device.address}
+      instanceNamePattern: DB2 {device.address}
+      iconPattern: host
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - pattern: '{device.address}'
+        key: dt.ip_addresses
+        displayName: IP Address
+      - pattern: '{device.name}'
+        key: Hostname
+  - enabled: true
+    name: sql:db2_instance
+    displayName: DB2 Database Instance
+    rules:
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{alias}'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2.hadr)
+      attributes:
+      - key: Alias
+        displayName: Alias
+        pattern: '{alias}'
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: Service level
+        pattern: '{service_level}'
+      - key: HADRRole
+        displayName: HADR role
+        pattern: '{hadr_role}'
+      - key: HADRSyncMode
+        displayName: HADR sync mode
+        pattern: '{hadr_syncmode}'
+      - key: HADRFlags
+        displayName: HADR flags
+        pattern: '{hadr_flags}'
+      - key: HADRPrimaryHost
+        displayName: HADR primary member host
+        pattern: '{primary_member_host}'
+      - key: HADRPrimaryInstance
+        displayName: HADR primary instance
+        pattern: '{primary_instance}'
+      - key: HADRStandbyHost
+        displayName: HADR standby member host
+        pattern: '{standby_member_host}'
+      - key: HADRStandbyInstance
+        displayName: HADR standby instance
+        pattern: '{standby_instance}'
+      - key: HADRTimeout
+        displayName: HADR timeout (seconds)
+        pattern: '{hadr_timeout}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: alias
+      - key: device
+      - key: service_level
+      - key: instance_name
+      - key: hadr_role
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{alias}'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      - sourceType: Logs
+      attributes:
+      - key: Alias
+        displayName: Alias
+        pattern: '{alias}'
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: Service level
+        pattern: '{service_level}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: alias
+      - key: device
+      - key: service_level
+      - key: instance_name
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{alias}'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - key: Alias
+        displayName: Alias
+        pattern: '{alias}'
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: alias
+      - key: device
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{device} ({instance_name})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2.hadr)
+      attributes:
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: Service level
+        pattern: '{service_level}'
+      - key: HADRRole
+        displayName: HADR role
+        pattern: '{hadr_role}'
+      - key: HADRSyncMode
+        displayName: HADR sync mode
+        pattern: '{hadr_syncmode}'
+      - key: HADRFlags
+        displayName: HADR flags
+        pattern: '{hadr_flags}'
+      - key: HADRPrimaryHost
+        displayName: HADR primary member host
+        pattern: '{primary_member_host}'
+      - key: HADRPrimaryInstance
+        displayName: HADR primary instance
+        pattern: '{primary_instance}'
+      - key: HADRStandbyHost
+        displayName: HADR standby member host
+        pattern: '{standby_member_host}'
+      - key: HADRStandbyInstance
+        displayName: HADR standby instance
+        pattern: '{standby_instance}'
+      - key: HADRTimeout
+        displayName: HADR timeout (seconds)
+        pattern: '{hadr_timeout}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: device
+      - key: service_level
+      - key: instance_name
+      - key: hadr_role
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{device} ({instance_name})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      - sourceType: Logs
+      attributes:
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: Service level
+        pattern: '{service_level}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: device
+      - key: service_level
+      - key: instance_name
+    - idPattern: db2_instance_{device}
+      instanceNamePattern: '{device}'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      # DXS-2207 SAME_AS relation to PGI
+      - key: dt.ip_addresses
+        pattern: "{device.address}"
+      - key: dt.listen_ports
+        pattern: "{device.port}"
+      requiredDimensions:
+      - key: device
+  - enabled: true
+    name: sql:db2_database_member
+    displayName: DB2 Database Member
+    rules:
+    - idPattern: db2_member_{device}_{member}
+      instanceNamePattern: '{alias} (member {member})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - key: InstanceAlias
+        displayName: Instance alias
+        pattern: '{alias}'
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Member
+        displayName: Member
+        pattern: '{member}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: ServiceLevel
+        pattern: '{service_level}'
+      requiredDimensions:
+      - key: alias
+      - key: member
+      - key: device
+      - key: instance_name
+    - idPattern: db2_member_{device}_{member}
+      instanceNamePattern: '{device} ({instance_name} member {member})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2)
+      attributes:
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Member
+        displayName: Member
+        pattern: '{member}'
+      - key: Instance
+        displayName: Instance name
+        pattern: '{instance_name}'
+      - key: ServiceLevel
+        displayName: ServiceLevel
+        pattern: '{service_level}'
+      requiredDimensions:
+      - key: member
+      - key: device
+      - key: instance_name
+  - enabled: true
+    name: sql:db2_tablespace
+    displayName: DB2 Tablespace
+    rules:
+    - idPattern: db2_tablespace_{device}_{tbsp_id}_{member}
+      instanceNamePattern: '{tbsp_name} ({alias} member {member})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2.tbsp)
+      attributes:
+      - key: InstanceAlias
+        displayName: Instance alias
+        pattern: '{alias}'
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Member
+        displayName: Member
+        pattern: '{member}'
+      - key: Name
+        displayName: Name
+        pattern: '{tbsp_name}'
+      - key: TableSpaceID
+        displayName: ID
+        pattern: '{tbsp_id}'
+      - key: AutoResizeEnabled
+        displayName: Auto-resize enabled
+        pattern: '{tbsp_auto_resize_enabled}'
+      requiredDimensions:
+      - key: alias
+      - key: member
+      - key: device
+      - key: tbsp_id
+    - idPattern: db2_tablespace_{device}_{tbsp_id}_{member}
+      instanceNamePattern: '{tbsp_name} ({device} {instance_name} member {member})'
+      iconPattern: ibm-db2
+      sources:
+      - sourceType: Metrics
+        condition: $prefix(db2.tbsp)
+      attributes:
+      - key: Device
+        displayName: Device url
+        pattern: '{device}'
+      - key: Member
+        displayName: Member
+        pattern: '{member}'
+      - key: Name
+        displayName: Name
+        pattern: '{tbsp_name}'
+      - key: TableSpaceID
+        displayName: ID
+        pattern: '{tbsp_id}'
+      - key: AutoResizeEnabled
+        displayName: Auto-resize enabled
+        pattern: '{tbsp_auto_resize_enabled}'
+      requiredDimensions:
+      - key: member
+      - key: device
+      - key: tbsp_id
+  
+  relationships:
+  - enabled: true
+    sources:
+    - sourceType: Metrics
+      condition: $prefix(db2)
+    fromType: sql:db2_instance
+    typeOfRelation: RUNS_ON
+    toType: host
+  - enabled: true
+    sources:
+    - sourceType: Metrics
+      condition: $prefix(db2)
+    fromType: sql:db2_database_member
+    typeOfRelation: CHILD_OF
+    toType: sql:db2_instance
+  - enabled: true
+    sources:
+    - sourceType: Metrics
+      condition: $prefix(db2)
+    fromType: sql:db2_tablespace
+    typeOfRelation: CHILD_OF
+    toType: sql:db2_database_member
+  - enabled: true
+    sources:
+    - sourceType: Entities
+      mappingRules:
+      - sourceProperty: dt.ip_addresses
+        sourceTransformation: To lower case
+        destinationProperty: ipAddress
+        destinationTransformation: To lower case
+    fromType: sql:db2_host
+    typeOfRelation: SAME_AS
+    toType: host
+  - typeOfRelation: RUNS_ON
+    fromType: sql:db2_instance
+    toType: sql:db2_host
+    enabled: true
+    sources:
+    - sourceType: Metrics
+      condition: $prefix(db2)
+    - sourceType: Logs
+  # DXS-2207 SAME_AS PGI 
+  - fromType: sql:db2_instance
+    typeOfRelation: SAME_AS
+    toType: process_group_instance
+    sources:
+      - sourceType: Entities
+        mappingRules:
+          - sourceProperty: dt.ip_addresses
+            sourceTransformation: Leave text as-is
+            destinationProperty: dt.ip_addresses
+            destinationTransformation: Leave text as-is
+          - sourceProperty: dt.listen_ports
+            sourceTransformation: Leave text as-is
+            destinationProperty: dt.listen_ports
+            destinationTransformation: Leave text as-is
