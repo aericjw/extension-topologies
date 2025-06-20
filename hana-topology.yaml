@@ -1,0 +1,480 @@
+topology:
+  types:
+    - name: sql:hana_db_host
+      enabled: true
+      displayName: SAP HANA DB Host
+      rules:
+        - idPattern: sql_hana_db_host_{custom_host}
+          instanceNamePattern: SAP HANA DB {custom_host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.build_version)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: custom_host_name
+              pattern: "{custom_host}"
+            - key: host_name
+              pattern: "{host}"
+            - key: build_version
+              pattern: "{build_version}"
+              displayName: Build Version
+        - idPattern: sql_hana_db_host_{custom_host}
+          instanceNamePattern: HANA DB {custom_host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.ip_addresses)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: custom_host_name
+              pattern: "{custom_host}"
+            - key: host_name
+              pattern: "{host}"
+            - key: ip_addresses
+              pattern: "{ip_addresses}"
+              displayName: IP Address
+        - idPattern: sql_hana_db_host_{custom_host}
+          instanceNamePattern: HANA DB {custom_host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.license.limit)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: custom_host_name
+              pattern: "{custom_host}"
+            - key: host_name
+              pattern: "{host}"
+              displayName: Host
+            - key: license_limit
+              pattern: "{licensed_memory_limit}"
+              displayName: Licensed Limit
+            - key: license_id
+              pattern: "{system_id}"
+              displayName: License ID
+            - key: license_exp_date
+              pattern: "{expiration_date}"
+              displayName: License Expiration Date
+            - key: license_valid
+              pattern: "{valid}"
+              displayName: License Valid
+        - idPattern: sql_hana_db_host_{custom_host}
+          instanceNamePattern: HANA DB {custom_host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: custom_host_name
+              pattern: "{custom_host}"
+            - key: host_name
+              pattern: "{host}"
+        - idPattern: sql_hana_db_host_{host}
+          instanceNamePattern: SAP HANA DB {host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.build_version)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: host_name
+              pattern: "{host}"
+            - key: build_version
+              pattern: "{build_version}"
+              displayName: Build Version
+        - idPattern: sql_hana_db_host_{host}
+          instanceNamePattern: HANA DB {host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.ip_addresses)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: host_name
+              pattern: "{host}"
+            - key: ip_addresses
+              pattern: "{ip_addresses}"
+              displayName: IP Address
+        - idPattern: sql_hana_db_host_{host}
+          instanceNamePattern: HANA DB {host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.license.limit)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: host_name
+              pattern: "{host}"
+              displayName: Host
+            - key: license_limit
+              pattern: "{licensed_memory_limit}"
+              displayName: Licensed Limit
+            - key: license_id
+              pattern: "{system_id}"
+              displayName: License ID
+            - key: license_exp_date
+              pattern: "{expiration_date}"
+              displayName: License Expiration Date
+            - key: license_valid
+              pattern: "{valid}"
+              displayName: License Valid
+        - idPattern: sql_hana_db_host_{host}
+          instanceNamePattern: HANA DB {host}
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+              displayName: IP Address
+            - key: host_name
+              pattern: "{host}"
+    - name: sql:hana_db_service
+      enabled: true
+      displayName: SAP HANA DB Service
+      rules:
+        - idPattern: sql_hana_db_service_{custom_host}_{service_name}_{port}
+          instanceNamePattern: "{service_name}:{port} on {custom_host}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service.status)
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: service_name
+              pattern: "{service_name}"
+              displayName: Name
+            - key: port
+              pattern: "{port}"
+              displayName: Port
+            - key: sql_port
+              pattern: "{sql_port}"
+              displayName: SQL Port
+            - key: status
+              pattern: "{status}"
+              displayName: Status
+            # DXS-2207 SAME_AS relation to PGI
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+            - key: dt.listen_ports
+              pattern: "{port}"
+        - idPattern: sql_hana_db_service_{custom_host}_{service_name}_{port}
+          instanceNamePattern: "{service_name}:{port} on {custom_host}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service)
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: service_name
+              pattern: "{service_name}"
+              displayName: Name
+            - key: port
+              pattern: "{port}"
+              displayName: Port
+            # DXS-2207 SAME_AS relation to PGI
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+            - key: dt.listen_ports
+              pattern: "{port}"
+        - idPattern: sql_hana_db_service_{host}_{service_name}_{port}
+          instanceNamePattern: "{service_name}:{port} on {host}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service.status)
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: service_name
+              pattern: "{service_name}"
+              displayName: Name
+            - key: port
+              pattern: "{port}"
+              displayName: Port
+            - key: sql_port
+              pattern: "{sql_port}"
+              displayName: SQL Port
+            - key: status
+              pattern: "{status}"
+              displayName: Status
+            # DXS-2207 SAME_AS relation to PGI
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+            - key: dt.listen_ports
+              pattern: "{port}"
+        - idPattern: sql_hana_db_service_{host}_{service_name}_{port}
+          instanceNamePattern: "{service_name}:{port} on {host}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service)
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: service_name
+              pattern: "{service_name}"
+              displayName: Name
+            - key: port
+              pattern: "{port}"
+              displayName: Port
+            # DXS-2207 SAME_AS relation to PGI
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+            - key: dt.listen_ports
+              pattern: "{port}"
+    - name: sql:hana_db_database
+      enabled: true
+      displayName: SAP HANA Database
+      rules:
+        - idPattern: sql_hana_db_database_{custom_host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {custom_host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.limits)
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+            - key: max_sessions
+              pattern: '{max_num_sessions}'
+              displayName: Maximum Number of Sessions
+            - key: max_transactions
+              pattern: '{max_num_transactions}'
+              displayName: Maximum Number of Transactions
+        - idPattern: sql_hana_db_database_{custom_host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {custom_host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+        - idPattern: sql_hana_db_database_{custom_host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {custom_host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service.replication.log_shipping_delay)
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+            - key: replication_host
+              pattern: '{secondary_host}'
+              displayName: Replication Host
+            - key: replication_status
+              pattern: '{replication_status}'
+              displayName: Replication Status
+            - key: replication_mode
+              pattern: '{replication_mode}'
+              displayName: Replication Mode
+            - key: full_sync
+              pattern: '{full_sync}'
+              displayName: Full Sync
+        - idPattern: sql_hana_db_database_{custom_host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {custom_host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db)
+          attributes:
+            - key: custom_host
+              pattern: "{custom_host}"
+              displayName: Custom Host Name
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+        - idPattern: sql_hana_db_database_{host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.limits)
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+            - key: max_sessions
+              pattern: '{max_num_sessions}'
+              displayName: Maximum Number of Sessions
+            - key: max_transactions
+              pattern: '{max_num_transactions}'
+              displayName: Maximum Number of Transactions
+        - idPattern: sql_hana_db_database_{host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+        - idPattern: sql_hana_db_database_{host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db.service.replication.log_shipping_delay)
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+            - key: replication_host
+              pattern: '{secondary_host}'
+              displayName: Replication Host
+            - key: replication_status
+              pattern: '{replication_status}'
+              displayName: Replication Status
+            - key: replication_mode
+              pattern: '{replication_mode}'
+              displayName: Replication Mode
+            - key: full_sync
+              pattern: '{full_sync}'
+              displayName: Full Sync
+        - idPattern: sql_hana_db_database_{host}_{database}_{device.port}
+          instanceNamePattern: "{database} @ {host}:{device.port}"
+          iconPattern: sap
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sap.hana.db)
+          attributes:
+            - key: host
+              pattern: "{host}"
+              displayName: Host
+            - key: database
+              pattern: "{database}"
+              displayName: Database Name
+            - key: port
+              pattern: "{device.port}"
+              displayName: SQL Port
+  relationships:
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sap.hana.db)
+      fromType: sql:hana_db_service
+      typeOfRelation: RUNS_ON
+      toType: sql:hana_db_host
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sap.hana.db)
+      fromType: sql:hana_db_database
+      typeOfRelation: RUNS_ON
+      toType: sql:hana_db_host
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sap.hana.db)
+      fromType: sql:hana_db_service
+      typeOfRelation: CHILD_OF
+      toType: sql:hana_db_database
+    - enabled: true
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: To lower case
+              destinationProperty: ipAddress
+              destinationTransformation: To lower case
+      fromType: sql:hana_db_host
+      typeOfRelation: SAME_AS
+      toType: host
+    # DXS-2207 SAME_AS PGI 
+    - fromType: sql:hana_db_service
+      typeOfRelation: SAME_AS
+      toType: process_group_instance
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.ip_addresses
+              destinationTransformation: Leave text as-is
+            - sourceProperty: dt.listen_ports
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.listen_ports
+              destinationTransformation: Leave text as-is
