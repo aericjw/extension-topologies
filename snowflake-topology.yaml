@@ -1,0 +1,61 @@
+topology:
+  types:
+    - name: sql:snowflake_warehouse
+      displayName: Snowflake Warehouse
+      enabled: true
+      rules:
+        - idPattern: snowflake_warehouse_{device}_{account}_{warehouse}
+          instanceNamePattern: Warehouse {warehouse} ({account})
+          iconPattern: host
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(snowflake.account)
+          attributes:
+            - key: device
+              displayName: Connection url
+              pattern: '{device}'
+            - key: account
+              displayName: Account
+              pattern: '{account}'
+            - key: warehouse
+              displayName: Warehouse name
+              pattern: '{warehouse}'
+          requiredDimensions:
+            - key: device
+            - key: account
+            - key: warehouse
+    - name: sql:snowflake_account
+      displayName: Snowflake Account
+      enabled: true
+      rules:
+        - idPattern: snowflake_account_{device}_{account}
+          instanceNamePattern: '{account}'
+          iconPattern: infrastructure
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(snowflake.account)
+          attributes:
+            - key: device
+              displayName: Connection
+              pattern: '{device}'
+            - key: account
+              displayName: Account
+              pattern: '{account}'
+          requiredDimensions:
+            - key: device
+            - key: account
+        - idPattern: snowflake_account_{device}_{account}
+          instanceNamePattern: '{account}'
+          iconPattern: infrastructure
+          sources:
+            - sourceType: Logs
+          requiredDimensions:
+            - key: account
+  relationships:
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(snowflake.account)
+      fromType: sql:snowflake_account
+      typeOfRelation: CHILD_OF
+      toType: sql:snowflake_warehouse
