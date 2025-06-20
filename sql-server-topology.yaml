@@ -1,0 +1,612 @@
+topology:
+  relationships:
+    - typeOfRelation: RUNS_ON
+      fromType: sql:sql_server_availability_database
+      toType: sql:sql_server_availability_replica
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sql-server.always-on)
+    - typeOfRelation: INSTANCE_OF
+      fromType: sql:sql_server_availability_replica
+      toType: sql:sql_server_availability_group
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sql-server)
+    - typeOfRelation: SAME_AS
+      fromType: sql:sql_server_availability_replica
+      toType: sql:sql_server_instance
+      enabled: true
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: ar_server_name
+              sourceTransformation: To lower case
+              destinationProperty: server
+              destinationTransformation: To lower case
+            - sourceProperty: ar_instance_name
+              sourceTransformation: To lower case
+              destinationProperty: instance
+              destinationTransformation: To lower case
+    - typeOfRelation: CHILD_OF
+      fromType: sql:sql_server_database
+      toType: sql:sql_server_instance
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sql-server)
+    - typeOfRelation: RUNS_ON
+      fromType: sql:sql_server_instance
+      toType: sql:sql_server_host
+      enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(sql-server)
+    - typeOfRelation: SAME_AS
+      fromType: sql:sql_server_instance
+      toType: process_group_instance
+      enabled: true
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.ip_addresses
+              destinationTransformation: Leave text as-is
+            - sourceProperty: dt.listen_ports
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.listen_ports
+              destinationTransformation: Leave text as-is
+    - typeOfRelation: SAME_AS
+      fromType: sql:sql_server_host
+      toType: host
+      enabled: true
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: To lower case
+              destinationProperty: ipAddress
+              destinationTransformation: To lower case
+  types:
+    - name: sql:sql_server_agent
+      enabled: true
+      displayName: SQL Server Agent
+      rules:
+        - idPattern: sql_server_agent_{service_name}_{instance}
+          instanceNamePattern: '{service_name} on {instance}'
+          iconPattern: agent
+          sources:
+            - sourceType: Metrics
+              condition: $eq(sql-server.agent.status)
+          requiredDimensions:
+            - key: instance
+            - key: service_name
+          attributes:
+            - key: instance
+              pattern: '{instance}'
+              displayName: Instance Name
+            - key: service_name
+              pattern: '{service_name}'
+              displayName: Service Name
+    - name: sql:sql_server_availability_database
+      displayName: SQL Server Availability Database
+      enabled: true
+      rules:
+        - idPattern: 
+            sql_server_availability_database_{device}_{availability.group.id}_{availability.replica.id}_{availability.database.id}
+          instanceNamePattern: '{availability.database.name} (group: {availability.group.name})'
+          iconPattern: database
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.name
+            - key: availability.group.id
+            - key: availability.replica.name
+            - key: availability.replica.id
+            - key: availability.database.name
+            - key: availability.database.id
+            - key: availability.database.state
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_name
+              pattern: '{availability.group.name}'
+              displayName: Group name
+            - key: ag_id
+              pattern: '{availability.group.id}'
+              displayName: Group ID
+            - key: ar_name
+              pattern: '{availability.replica.name}'
+              displayName: Replica name
+            - key: ar_id
+              pattern: '{availability.replica.id}'
+              displayName: Replica ID
+            - key: ad_name
+              pattern: '{availability.database.name}'
+              displayName: Database name
+            - key: ad_id
+              pattern: '{availability.database.id}'
+              displayName: Database ID
+            - key: ad_state
+              pattern: '{availability.database.state}'
+              displayName: Database state
+            - key: ad_sync_state
+              pattern: '{availability.database.synchronization_state}'
+              displayName: Synchronization state
+            - key: ad_sync_health
+              pattern: '{availability.database.synchronization_health}'
+              displayName: Synchronization health
+          role: default
+        - idPattern: 
+            sql_server_availability_database_{device}_{availability.group.id}_{availability.replica.id}_{availability.database.id}
+          instanceNamePattern: '{availability.database.name} (group: {availability.group.name})'
+          iconPattern: database
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.name
+            - key: availability.group.id
+            - key: availability.replica.name
+            - key: availability.replica.id
+            - key: availability.database.name
+            - key: availability.database.id
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_name
+              pattern: '{availability.group.name}'
+              displayName: Group name
+            - key: ag_id
+              pattern: '{availability.group.id}'
+              displayName: Group ID
+            - key: ar_name
+              pattern: '{availability.replica.name}'
+              displayName: Replica name
+            - key: ar_id
+              pattern: '{availability.replica.id}'
+              displayName: Replica ID
+            - key: ad_name
+              pattern: '{availability.database.name}'
+              displayName: Database name
+            - key: ad_id
+              pattern: '{availability.database.id}'
+              displayName: Database ID
+          role: default
+    - name: sql:sql_server_availability_group
+      displayName: SQL Server Availability Group
+      enabled: true
+      rules:
+        - idPattern: sql_server_availability_group_{device}_{availability.group.id}
+          instanceNamePattern: '{availability.group.name} (via: {device.name})'
+          iconPattern: resourcerequest
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.id
+            - key: availability.group.name
+            - key: availability.group.automated_backup_preference
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_backup_preference
+              pattern: '{availability.group.automated_backup_preference}'
+              displayName: Automated backup preference
+          role: default
+        - idPattern: sql_server_availability_group_{device}_{availability.group.id}
+          instanceNamePattern: '{availability.group.name} (via: {device.name})'
+          iconPattern: resourcerequest
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.id
+            - key: availability.group.name
+            - key: availability.group.primary_recovery_health
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_prim_rec_health
+              pattern: '{availability.group.primary_recovery_health}'
+              displayName: Primary recovery health
+          role: default
+        - idPattern: sql_server_availability_group_{device}_{availability.group.id}
+          instanceNamePattern: '{availability.group.name} (via: {device.name})'
+          iconPattern: resourcerequest
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.id
+            - key: availability.group.name
+            - key: availability.group.secondary_recovery_health
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_sec_rec_health
+              pattern: '{availability.group.secondary_recovery_health}'
+              displayName: Secondary recovery health
+        - idPattern: sql_server_availability_group_{device}_{availability.group.id}
+          instanceNamePattern: '{availability.group.name} (via: {device.name})'
+          iconPattern: resourcerequest
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.id
+            - key: availability.group.name
+            - key: availability.group.synchronization_health
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_sync_health
+              pattern: '{availability.group.synchronization_health}'
+              displayName: Synchronization health
+        - idPattern: sql_server_availability_group_{device}_{availability.group.id}
+          instanceNamePattern: '{availability.group.name} (via: {device.name})'
+          iconPattern: resourcerequest
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.name
+            - key: availability.group.id
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_name
+              pattern: '{availability.group.name}'
+              displayName: Group name
+            - key: ag_id
+              pattern: '{availability.group.id}'
+              displayName: Group ID
+          role: default
+    - name: sql:sql_server_availability_replica
+      displayName: SQL Server Availability Replica
+      enabled: true
+      rules:
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.instance
+            - key: availability.replica.availability_mode
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ar_avail_mode
+              pattern: '{availability.replica.availability_mode}'
+              displayName: Availability mode
+            - key: ar_server_name
+              pattern: '{availability.replica.name}'
+              displayName: Replica server name
+            - key: ar_instance_name
+              pattern: '{availability.replica.instance}'
+              displayName: Replica instance name
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.failover_mode
+          attributes:
+            - key: ar_fail_mode
+              pattern: '{availability.replica.failover_mode}'
+              displayName: Failover mode
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.is_local
+          attributes:
+            - key: ar_is_local
+              pattern: '{availability.replica.is_local}'
+              displayName: Is local
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.role
+          attributes:
+            - key: ar_role
+              pattern: '{availability.replica.role}'
+              displayName: Role
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.operational_state
+          attributes:
+            - key: ar_op_state
+              pattern: '{availability.replica.operational_state}'
+              displayName: Operational state
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.recovery_health
+          attributes:
+            - key: ar_rec_health
+              pattern: '{availability.replica.recovery_health}'
+              displayName: Recovery health
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.synchronization_health
+          attributes:
+            - key: ar_sync_health
+              pattern: '{availability.replica.synchronization_health}'
+              displayName: Synchronization health
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.replica.id
+            - key: availability.replica.name
+            - key: availability.replica.connected_state
+          attributes:
+            - key: ar_con_state
+              pattern: '{availability.replica.connected_state}'
+              displayName: Connected state
+          role: default
+        - idPattern: 
+            sql_server_availability_replica_{device}_{availability.group.id}_{availability.replica.id}
+          instanceNamePattern: '{availability.replica.name} (group: {availability.group.name})'
+          iconPattern: copy
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: availability.group.name
+            - key: availability.group.id
+            - key: availability.replica.id
+            - key: availability.replica.name
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: ag_name
+              pattern: '{availability.group.name}'
+              displayName: Group name
+            - key: ag_id
+              pattern: '{availability.group.id}'
+              displayName: Group ID
+            - key: ar_name
+              pattern: '{availability.replica.name}'
+              displayName: Replica name
+            - key: ar_id
+              pattern: '{availability.replica.id}'
+              displayName: Replica ID
+          role: default
+    - name: sql:sql_server_database
+      displayName: SQL Server Database
+      enabled: true
+      rules:
+        - idPattern: sql_server_database_{device}_{server}_{instance}_{database}
+          instanceNamePattern: '{database} on {server} (instance: {instance})'
+          iconPattern: azure-sql-servers
+          sources:
+            - sourceType: Metrics
+              condition: $eq(sql-server.databases.state)
+          requiredDimensions:
+            - key: instance
+            - key: server
+            - key: database
+            - key: database.state
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: instance
+              pattern: '{instance}'
+              displayName: Instance Name
+            - key: server
+              pattern: '{server}'
+              displayName: Server Name
+            - key: database
+              pattern: '{database}'
+              displayName: Database Name
+            - key: db_state
+              pattern: '{database.state}'
+              displayName: State
+            - key: db_recovery_model
+              pattern: '{database.recovery_model}'
+              displayName: Recovery model
+            - key: db_user_access
+              pattern: '{database.user_access}'
+              displayName: User access mode
+            - key: db_updateability
+              pattern: '{database.updateability}'
+              displayName: Updateability
+          role: default
+        - idPattern: sql_server_database_{device}_{server}_{instance}_{database}
+          instanceNamePattern: '{database} on {server} (instance: {instance})'
+          iconPattern: azure-sql-servers
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: instance
+            - key: server
+            - key: database
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: instance
+              pattern: '{instance}'
+              displayName: Instance Name
+            - key: server
+              pattern: '{server}'
+              displayName: Server Name
+            - key: database
+              pattern: '{database}'
+              displayName: Database Name
+          role: default
+    - name: sql:sql_server_host
+      displayName: SQL Server Host
+      enabled: true
+      rules:
+        - idPattern: sql_server_host_{device.name}
+          instanceNamePattern: SQL Server Host ({device.name})
+          iconPattern: host
+          sources:
+            - sourceType: Metrics
+              condition: $eq(sql-server.host.cpus)
+          requiredDimensions:
+            - key: cpu_count
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: IP Address
+            - key: cpu_count
+              pattern: '{cpu_count}'
+              displayName: CPU Count
+            - key: physical_memory
+              pattern: '{physical_memory}'
+              displayName: Physical Memory (KB)
+            - key: hyperthread_ratio
+              pattern: '{hyperthread_ratio}'
+              displayName: CPU Hyperthreading Ratio
+            - key: virtual_machine_type
+              pattern: '{virtual_machine_type}'
+              displayName: Virtual Machine Type
+          role: default
+        - idPattern: sql_server_host_{device.name}
+          instanceNamePattern: SQL Server Host ({device.name})
+          iconPattern: host
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          requiredDimensions:
+            - key: device.address
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: IP Address
+          role: default
+    - name: sql:sql_server_instance
+      displayName: SQL Server Instance
+      enabled: true
+      rules:
+        - idPattern: sql_server_instance_{device}_{server}_{instance}
+          instanceNamePattern: '{instance} on {server} (via: {device.name})'
+          iconPattern: sql-microsoft
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(sql-server)
+          attributes:
+            - key: device
+              pattern: '{device}'
+              displayName: Device URL
+            - key: instance
+              pattern: '{instance}'
+              displayName: Instance Name
+            - key: server
+              pattern: '{server}'
+              displayName: Server Name
+            - key: product_version
+              pattern: '{product_version}'
+              displayName: Product Version
+            - key: major_version
+              pattern: '{major_version}'
+              displayName: Major Version
+            - key: start_time
+              pattern: '{start_time}'
+              displayName: Start Time
+            - key: edition
+              pattern: '{edition}'
+              displayName: Edition
+            - key: affinity_type
+              pattern: '{affinity_type}'
+              displayName: Affinity Type
+            - key: endpoint_metadata
+              pattern: '{endpoint_metadata}'
+              displayName: Endpoint Metadata
+            - key: dt.listen_ports
+              pattern: '{device.port}'
+              displayName: Ports
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: IP Address
+            - key: cpu_count
+              pattern: '{cpu_count}'
+              displayName: CPU Count
+            - key: physical_memory
+              pattern: '{physical_memory}'
+              displayName: Physical Memory (KB)
+            - key: hyperthread_ratio
+              pattern: '{hyperthread_ratio}'
+              displayName: CPU Hyperthreading Ratio
+            - key: virtual_machine_type
+              pattern: '{virtual_machine_type}'
+              displayName: Virtual Machine Type
+          role: default
+        - idPattern: sql_server_instance_{device}_{server}_{instance}
+          instanceNamePattern: '{instance} on {server} (via: {device.name})'
+          iconPattern: sql-microsoft
+          sources:
+            - sourceType: Logs
+          requiredDimensions:
+            - key: dt.extension.name
+              valuePattern: $eq(com.dynatrace.extension.sql-server)
+            - key: instance
+            - key: server
