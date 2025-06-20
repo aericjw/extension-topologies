@@ -1,0 +1,210 @@
+topology:
+  relationships:
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(postgres)
+      fromType: sql:postgres_database
+      typeOfRelation: CHILD_OF
+      toType: sql:postgres_instance
+    - enabled: true
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: To lower case
+              destinationProperty: ipAddress
+              destinationTransformation: To lower case
+      fromType: sql:postgres_host
+      typeOfRelation: SAME_AS
+      toType: host
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(postgres)
+      fromType: sql:postgres_instance
+      typeOfRelation: RUNS_ON
+      toType: sql:postgres_host
+    - enabled: true
+      fromType: sql:postgres_instance
+      typeOfRelation: SAME_AS
+      toType: process_group_instance
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.ip_addresses
+              destinationTransformation: Leave text as-is
+            - sourceProperty: dt.listen_ports
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.listen_ports
+              destinationTransformation: Leave text as-is
+    - enabled: true
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(postgres)
+      fromType: sql:postgres_tablespace
+      typeOfRelation: PART_OF
+      toType: sql:postgres_instance
+  types:
+    - name: sql:postgres_database
+      displayName: Postgres Database
+      enabled: true
+      rules:
+        - idPattern: postgres_database_{device.address}_{device.port}_{database}
+          instanceNamePattern: '{database} ({device.name}:{device.port})'
+          iconPattern: azure-database-for-postgresql
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(postgres)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: database
+              pattern: '{database}'
+              displayName: Database
+        - idPattern: postgres_database_{device.address}_{device.port}_{database}
+          instanceNamePattern: '{database} ({device.name}:{device.port})'
+          iconPattern: azure-database-for-postgresql
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: database
+              pattern: '{database}'
+              displayName: Database
+          requiredDimensions:
+            - key: device.address
+            - key: device.name
+            - key: device.port
+    - name: sql:postgres_host
+      displayName: Postgres Host
+      enabled: true
+      rules:
+        - idPattern: postgres_host_{device.address}
+          instanceNamePattern: '{device.name}'
+          iconPattern: host
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(postgres)
+          attributes:
+            - pattern: '{device.address}'
+              key: dt.ip_addresses
+              displayName: Address
+            - pattern: '{device.name}'
+              key: Hostname
+              displayName: Hostname
+    - name: sql:postgres_instance
+      displayName: Postgres Instance
+      enabled: true
+      rules:
+        - idPattern: postgres_instance_{device.address}_{device.port}
+          instanceNamePattern: '{device.name}:{device.port}'
+          iconPattern: postgre
+          sources:
+            - sourceType: Metrics
+              condition: $eq(postgres.uptime)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: dt.listen_ports
+              pattern: '{device.port}'
+              displayName: Port
+            - key: endpoint_metadata
+              pattern: '{endpoint_metadata}'
+              displayName: Endpoint Metadata
+          requiredDimensions:
+            - key: device.address
+            - key: device.name
+            - key: device.port
+            - key: endpoint_metadata
+        - idPattern: postgres_instance_{device.address}_{device.port}
+          instanceNamePattern: '{device.name}:{device.port}'
+          iconPattern: postgre
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: dt.listen_ports
+              pattern: '{device.port}'
+              displayName: Port
+            - key: endpoint_var
+              pattern: '{endpoint_metadata}'
+              displayName: Endpoint Metadata
+          requiredDimensions:
+            - key: device.address
+            - key: device.name
+            - key: device.port
+        - idPattern: postgres_instance_{device.address}_{device.port}
+          instanceNamePattern: '{device.name}:{device.port}'
+          iconPattern: postgre
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(postgres)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device.address}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: dt.listen_ports
+              pattern: '{device.port}'
+              displayName: Port
+    - name: sql:postgres_tablespace
+      displayName: Postgres Tablespace
+      enabled: true
+      rules:
+        - idPattern: postgres_database_{device.address}_{device.port}_{tablespace}
+          instanceNamePattern: '{tablespace} ({device.name}:{device.port})'
+          iconPattern: azure-database-for-postgresql
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(postgres)
+          attributes:
+            - key: dt.ip_addresses
+              pattern: '{device}'
+              displayName: Address
+            - pattern: '{device.name}'
+              key: hostname
+              displayName: Hostname
+            - key: port
+              pattern: '{device.port}'
+              displayName: Port
+            - key: tablespace
+              pattern: '{tablespace}'
+              displayName: Tablespace
