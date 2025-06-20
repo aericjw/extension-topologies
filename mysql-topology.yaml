@@ -1,0 +1,107 @@
+topology:
+  types:
+    - name: mysql:instance
+      displayName: MySQL Instance
+      rules:
+        - idPattern: mysql_instance_{device}
+          instanceNamePattern: MySQL @ {device}
+          iconPattern: database
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(mysql.)
+          attributes:
+            - key: port
+              displayName: Port
+              pattern: "{device.port}"
+            - key: ipAddress
+              displayName: IP Address
+              pattern: "{device.address}"
+            - key: hostname
+              displayName: Hostname
+              pattern: "{device.name}"
+            # DXS-2207 SAME_AS relation to PGI
+            - key: dt.ip_addresses
+              pattern: "{device.address}"
+            - key: dt.listen_ports
+              pattern: "{device.port}"
+        - idPattern: mysql_instance_{device}
+          instanceNamePattern: MySQL @ {device}
+          iconPattern: database
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: port
+              displayName: Port
+              pattern: "{device.port}"
+            - key: ipAddress
+              displayName: IP Address
+              pattern: "{device.address}"
+            - key: hostname
+              displayName: Hostname
+              pattern: "{device.name}"
+    - name: mysql:database
+      displayName: MySQL Database
+      rules:
+        - idPattern: mysql_database_{device}_{database}
+          instanceNamePattern: '{database}'
+          iconPattern: database
+          sources:
+            - sourceType: Metrics
+              condition: $prefix(mysql.databases.)
+          attributes:
+            - key: database
+              displayName: Database
+              pattern: "{database}"
+            - key: port
+              displayName: Port
+              pattern: "{device.port}"
+            - key: ipAddress
+              displayName: IP Address
+              pattern: "{device.address}"
+        - idPattern: mysql_database_{device}_{database}
+          instanceNamePattern: '{database}'
+          iconPattern: database
+          sources:
+            - sourceType: Logs
+          attributes:
+            - key: database
+              displayName: Database
+              pattern: "{database}"
+            - key: port
+              displayName: Port
+              pattern: "{device.port}"
+            - key: ipAddress
+              displayName: IP Address
+              pattern: "{device.address}"
+  relationships:
+    - fromType: mysql:instance
+      toType: host
+      typeOfRelation: RUNS_ON
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: ipAddress
+              sourceTransformation: To lower case
+              destinationProperty: ipAddress
+              destinationTransformation: To lower case
+    - fromType: mysql:database
+      toType: mysql:instance
+      typeOfRelation: RUNS_ON
+      sources:
+        - sourceType: Metrics
+          condition: $prefix(mysql.databases.)
+    # DXS-2207 SAME_AS relation to PGI
+    - fromType: mysql:instance
+      toType: process_group_instance
+      typeOfRelation: SAME_AS
+      sources:
+        - sourceType: Entities
+          mappingRules:
+            - sourceProperty: dt.ip_addresses
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.ip_addresses
+              destinationTransformation: Leave text as-is
+            - sourceProperty: dt.listen_ports
+              sourceTransformation: Leave text as-is
+              destinationProperty: dt.listen_ports
+              destinationTransformation: Leave text as-is
