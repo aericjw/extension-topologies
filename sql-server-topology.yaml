@@ -606,7 +606,5 @@ topology:
           sources:
             - sourceType: Logs
           requiredDimensions:
-            - key: dt.extension.name
-              valuePattern: $eq(com.dynatrace.extension.sql-server)
             - key: instance
             - key: server
